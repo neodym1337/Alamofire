@@ -25,21 +25,23 @@ import Foundation
 /// Alamofire errors
 public let AlamofireErrorDomain = "com.alamofire.error"
 
-/**
+public struct Alamofire {
+    /**
     HTTP method definitions.
-
+    
     See http://tools.ietf.org/html/rfc7231#section-4.3
-*/
-public enum Method: String {
-    case OPTIONS = "OPTIONS"
-    case GET = "GET"
-    case HEAD = "HEAD"
-    case POST = "POST"
-    case PUT = "PUT"
-    case PATCH = "PATCH"
-    case DELETE = "DELETE"
-    case TRACE = "TRACE"
-    case CONNECT = "CONNECT"
+    */
+    public enum Method: String {
+        case OPTIONS = "OPTIONS"
+        case GET = "GET"
+        case HEAD = "HEAD"
+        case POST = "POST"
+        case PUT = "PUT"
+        case PATCH = "PATCH"
+        case DELETE = "DELETE"
+        case TRACE = "TRACE"
+        case CONNECT = "CONNECT"
+    }
 }
 
 /**
@@ -94,7 +96,7 @@ public enum ParameterEncoding {
                 return join("&", components.map{"\($0)=\($1)"} as [String])
             }
 
-            func encodesParametersInURL(method: Method) -> Bool {
+            func encodesParametersInURL(method: Alamofire.Method) -> Bool {
                 switch method {
                 case .GET, .HEAD, .DELETE:
                     return true
@@ -103,7 +105,7 @@ public enum ParameterEncoding {
                 }
             }
 
-            let method = Method(rawValue: mutableURLRequest.HTTPMethod)
+            let method = Alamofire.Method(rawValue: mutableURLRequest.HTTPMethod)
             if method != nil && encodesParametersInURL(method!) {
                 if let URLComponents = NSURLComponents(URL: mutableURLRequest.URL!, resolvingAgainstBaseURL: false) {
                     URLComponents.percentEncodedQuery = (URLComponents.query != nil ? URLComponents.query! + "&" : "") + query(parameters!)
@@ -305,7 +307,7 @@ public class Manager {
 
         :returns: The created request.
     */
-    public func request(method: Method, _ URLString: URLStringConvertible, parameters: [String: AnyObject]? = nil, encoding: ParameterEncoding = .URL) -> Request {
+    public func request(method: Alamofire.Method, _ URLString: URLStringConvertible, parameters: [String: AnyObject]? = nil, encoding: ParameterEncoding = .URL) -> Request {
         return request(encoding.encode(URLRequest(method, URLString), parameters: parameters).0)
     }
 
@@ -1444,7 +1446,7 @@ extension Request {
 
 // MARK: - Convenience -
 
-private func URLRequest(method: Method, URL: URLStringConvertible) -> NSURLRequest {
+private func URLRequest(method: Alamofire.Method, URL: URLStringConvertible) -> NSURLRequest {
     let mutableURLRequest = NSMutableURLRequest(URL: NSURL(string: URL.URLString)!)
     mutableURLRequest.HTTPMethod = method.rawValue
 
@@ -1463,7 +1465,7 @@ private func URLRequest(method: Method, URL: URLStringConvertible) -> NSURLReque
 
     :returns: The created request.
 */
-public func request(method: Method, URLString: URLStringConvertible, parameters: [String: AnyObject]? = nil, encoding: ParameterEncoding = .URL) -> Request {
+public func request(method: Alamofire.Method, URLString: URLStringConvertible, parameters: [String: AnyObject]? = nil, encoding: ParameterEncoding = .URL) -> Request {
     return request(encoding.encode(URLRequest(method, URLString), parameters: parameters).0)
 }
 
@@ -1493,7 +1495,7 @@ public func request(URLRequest: URLRequestConvertible) -> Request {
 
     :returns: The created upload request.
 */
-public func upload(method: Method, URLString: URLStringConvertible, file: NSURL) -> Request {
+public func upload(method: Alamofire.Method, URLString: URLStringConvertible, file: NSURL) -> Request {
     return Manager.sharedInstance.upload(URLRequest(method, URLString), file: file)
 }
 
@@ -1520,7 +1522,7 @@ public func upload(URLRequest: URLRequestConvertible, file: NSURL) -> Request {
 
     :returns: The created upload request.
 */
-public func upload(method: Method, URLString: URLStringConvertible, data: NSData) -> Request {
+public func upload(method: Alamofire.Method, URLString: URLStringConvertible, data: NSData) -> Request {
     return Manager.sharedInstance.upload(URLRequest(method, URLString), data: data)
 }
 
@@ -1547,7 +1549,7 @@ public func upload(URLRequest: URLRequestConvertible, data: NSData) -> Request {
 
     :returns: The created upload request.
 */
-public func upload(method: Method, URLString: URLStringConvertible, stream: NSInputStream) -> Request {
+public func upload(method: Alamofire.Method, URLString: URLStringConvertible, stream: NSInputStream) -> Request {
     return Manager.sharedInstance.upload(URLRequest(method, URLString), stream: stream)
 }
 
@@ -1576,7 +1578,7 @@ public func upload(URLRequest: URLRequestConvertible, stream: NSInputStream) -> 
 
     :returns: The created download request.
 */
-public func download(method: Method, URLString: URLStringConvertible, destination: Request.DownloadFileDestination) -> Request {
+public func download(method: Alamofire.Method, URLString: URLStringConvertible, destination: Request.DownloadFileDestination) -> Request {
     return Manager.sharedInstance.download(URLRequest(method, URLString), destination: destination)
 }
 
